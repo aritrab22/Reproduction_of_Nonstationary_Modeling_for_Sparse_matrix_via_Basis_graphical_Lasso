@@ -51,14 +51,7 @@ BGLBasisSetup <- function(y,locs,basis="LatticeKrig",Phi=NULL,crossvalidation=FA
   
   return(mylist)
 }
-
-########################################################################
-
-basis.setup <- BGLBasisSetup(y=dat, locs=locs, nlevel=1, NC=2)
-rowSums(basis.setup$Phi)
-names(basis.setup)
-
-########################################################################
+####################################################################################################################################
 nugget_estimate <- function(Phi_Phi,Phi_S_Phi,trS,n)
 {
   l <- dim(Phi_Phi)[1]
@@ -78,18 +71,7 @@ nugget_estimate <- function(Phi_Phi,Phi_S_Phi,trS,n)
   my_tau_sq <- out$par[2]
   return(my_tau_sq)
 }
-
-#######################################################################
-
-basis.setup <- BGLBasisSetup(y=tmin$data,locs=tmin$lon.lat.proj,basis="LatticeKrig",
-                                   crossvalidation=FALSE, NC=30,nlevel=1)
-Phi_Phi <- basis.setup$Phi_Phi
-Phi_S_Phi <- basis.setup$Phi_S_Phi
-trS <- basis.setup$trS
-tau_sq <- nugget_estimate(Phi_Phi,Phi_S_Phi,trS,n=dim(tmin$lon.lat)[1])
-
-#######################################################################
-
+######################################################################################################################################
 penaltymatrixsetup <- function(lambda,zero.diagonal.penalty=TRUE,l,basisdistancematrix=NULL)
 {
   # Set up penalty matrix if not prespecified and do not penalize marginal precision parameters
@@ -111,9 +93,7 @@ penaltymatrixsetup <- function(lambda,zero.diagonal.penalty=TRUE,l,basisdistance
   
   return(biglambda)
 }
-
-#########################################################
-
+########################################################################################################################################
 BGL_DC <- function(lambda,Phi_Dinv_Phi,Phi_Dinv_S_Dinv_Phi,guess,outer_tol=NULL,MAX_ITER=NULL,MAX_RUNTIME_SECONDS=NULL,verbose=TRUE)
 {
   
@@ -165,21 +145,7 @@ BGL_DC <- function(lambda,Phi_Dinv_Phi,Phi_Dinv_S_Dinv_Phi,guess,outer_tol=NULL,
   }
   return(guess)
 }
-
-###################################################
-
-basis.setup <- BGLBasisSetup(y=tmin$data,locs=tmin$lon.lat.proj,basis="LatticeKrig", 
-                                   crossvalidation=FALSE,NC=20,nlevel=1)
-Phi_Phi <- basis.setup$Phi_Phi
-Phi_S_Phi <- basis.setup$Phi_S_Phi
-tau_sq <- 2
-lambda <- matrix(10,nrow=dim(Phi_Phi)[1],ncol=dim(Phi_Phi)[1])
-diag(lambda) <- 0
-BGLguess <- BGL_DC(lambda=lambda,Phi_Dinv_Phi=Phi_Phi/tau_sq,
-                   Phi_Dinv_S_Dinv_Phi=Phi_S_Phi/(tau_sq^2), guess=diag(dim(Phi_Phi)[1]),
-                  outer_tol=0.05,MAX_ITER=50,MAX_RUNTIME_SECONDS=86400)
-
-#############################################################
+#######################################################################################################################################
 
 unpenalized_neglikelihood_Q <- function(Q,Phi_Dinv_Phi,Phi_Dinv_S_Dinv_Phi)
 {
@@ -265,13 +231,7 @@ BGL_CV <- function(kfolds=5,y,locs,lambdalist,zero.diagonal.penalty=TRUE,basis="
   
 }
 
-###############################################################################
-
-#the full search space considered, commented for runtime, will take very long
-#CVguess <- BGL_CV(kfolds=2, y=tmin$data, locs=tmin$lon.lat.proj, lambdalist=1:30, basis="LatticeKrig",
-#outer_tol=0.05, MAX_ITER=50, MAX_RUNTIME_SECONDS=86400, NC=30, nlevel=1,distance.penalty=TRUE)
-
-############################################################################
+#################################################################################################################################################
 
 BGL <- function(y,locs,lambda,zero.diagonal.penalty=TRUE,basis="LatticeKrig",Phi=NULL,guess=NULL,outer_tol=NULL,MAX_ITER=NULL,MAX_RUNTIME_SECONDS=NULL,tau_sq=NULL,verbose=TRUE,distance.penalty=FALSE,...)
 {
@@ -309,44 +269,11 @@ BGL <- function(y,locs,lambda,zero.diagonal.penalty=TRUE,basis="LatticeKrig",Phi
   
   return(mylist)
 }
-
-precision.fit <- BGL(y=tmin$data, locs=tmin$lon.lat.proj, lambda=7, basis="LatticeKrig",
-                         distance.penalty=TRUE,outer_tol=5e-2, MAX_ITER=50,
-                         MAX_RUNTIME_SECONDS=86400, NC=20, nlevel=1)
                          
-# The estimate in paper, with the tolerance set to 1e-2 not 5e-2 and NC=30 not NC=20.
-# Takes a few minutes longer than the version above
-# precision.fit <- BGL(y=tmin$data, locs=tmin$lon.lat.proj, lambda=7, basis="LatticeKrig",
-# distance.penalty=TRUE,outer_tol=1e-2, MAX_ITER=50,
-# MAX_RUNTIME_SECONDS=86400, NC=30, nlevel=1)
-# Plot standard errors
-cholQ <- chol(precision.fit$Q)
-dim(cholQ) 
-Phi <- precision.fit$Phi
-dim(Phi)
-marginal_variances <- rep(NA,dim(Phi)[1])
-for(i in 1:dim(Phi)[1])
-{
-     marginal_variances[i] <- norm(backsolve(cholQ,Phi[i,],transpose=TRUE) ,type="F")^2
-}
-quilt.plot(tmin$lon.lat.proj,sqrt(marginal_variances), 
-            main="Estimated process standard deviation")    
-# A (noisy) simulation
-c_coef <- backsolve(cholQ,rnorm(dim(Phi)[2])) 
-sim <- Phi %*% c_coef + sqrt(precision.fit$nugget_variance)*rnorm(dim(Phi)[1])
-
-grid_list <- list(
-  x = seq(0, 1, length.out = 90),   # 4 x-axis breaks
-  y = seq(0, 1, length.out = 90)    # 3 y-axis breaks
-)
-
-quilt.plot(tmin$lon.lat.proj,sim,main="Simulation")
-
-install.packages('huge')
-library(huge)
-L = huge.generator(n=900, d=90, graph = "hub")
-huge.plot(L$theta)
-
+#install.packages('huge')
+#library(huge)
+#L = huge.generator(n=900, d=90, graph = "hub")
+#huge.plot(L$theta)
 ################################################################################
 #Take range parameter = 1
 library(LatticeKrig)
