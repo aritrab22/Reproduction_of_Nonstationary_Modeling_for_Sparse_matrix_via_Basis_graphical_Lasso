@@ -25,8 +25,12 @@ To install the stable/testing version of INLA package in R (will be needed to in
 install.packages("INLA",repos=c(getOption("repos"),INLA="https://inla.r-inla-download.org/R/stable"), dep=TRUE)
 install.packages(FRK)
 ```
-
-
+```r
+install.packages('psych')   # To determine trace of a matrix
+install.packages('sf')
+install.packages('huge')    # To create the Hub Graph/ Graphical structure of the precision matrix
+install.packages('glasso')  # To perform Graphical lasso algorithm. 
+```
 The basic function is BGL, and the analysis of the minimum temperature
 dataset in the paper can be reproduced as
 
