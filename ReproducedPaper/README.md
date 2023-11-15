@@ -1,4 +1,4 @@
-# BasisGraphicalLasso
+# Reproduction of BasisGraphicalLasso
 
 This package contains code to perform the basis graphical lasso
 analysis of:
@@ -11,11 +11,21 @@ Please install the package with
 devtools::install_github("mlkrock/BasisGraphicalLasso")
 ```
 
-This implementation relies on the `QUIC` function for solving the graphical lasso. The CRAN package is orphaned, so install QUIC with
+This implementation relies on the `QUIC` function for solving the graphical lasso. The CRAN package is orphaned, so install the latest version of QUIC from the Archive in CRAN.
 
+You need to install the following dependencies also:
 ```r
-devtools::install_github("cran/QUIC")
+install.packages('sp')            #To convert a dataframe to an sptial object
+install.packages('LatticeKrig')   #To construct a particular type of basis functions
 ```
+You have to use the latest version of R(4.3) and Rtools(4.3) to install these libraries.
+
+To install the stable/testing version of INLA package in R (will be needed to install FRK package):
+```r
+install.packages("INLA",repos=c(getOption("repos"),INLA="https://inla.r-inla-download.org/R/stable"), dep=TRUE)
+install.packages(FRK)
+```
+
 
 The basic function is BGL, and the analysis of the minimum temperature
 dataset in the paper can be reproduced as
